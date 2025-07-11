@@ -1,0 +1,18 @@
+# robots.txt for Next.js site
+# Block Googlebot
+User-agent: Googlebot
+Disallow: /
+
+# Block all other bots
+User-agent: *
+Disallow: /
+
+# Optional: Prevent image indexing
+User-agent: Googlebot-Image
+Disallow: /
+
+# Optional: Prevent Ad bot
+User-agent: AdsBot-Google
+Disallow: /
+
+# No sitemap provided since crawling is blocked

