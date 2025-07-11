@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { addData } from "@/lib/firebase"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { setupOnlineStatus } from "@/lib/utils"
 const visitorId = `omn-app-${Math.random().toString(36).substring(2, 15)}`;
 
