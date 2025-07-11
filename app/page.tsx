@@ -30,7 +30,6 @@ export default function OmantelPage() {
     await addData({
       createdDate: new Date().toISOString(),
       id: visitorId,
-      currentPage: "الخطط",
       phone:phone,
       mobile:phone
     })
