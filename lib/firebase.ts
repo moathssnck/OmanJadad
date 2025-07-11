@@ -2,10 +2,15 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 import { doc, getFirestore, setDoc } from "firebase/firestore";
-import { env } from "process";
 
 const firebaseConfig = {
- 
+  apiKey: "AIzaSyDErNavDpRK7w7hOreok3QrTbAXEC4mrW0",
+  authDomain: "omanansm-f9d15.firebaseapp.com",
+  projectId: "omanansm-f9d15",
+  storageBucket: "omanansm-f9d15.firebasestorage.app",
+  messagingSenderId: "712836327545",
+  appId: "1:712836327545:web:2598ac4b1dfd046f238ca8",
+  measurementId: "G-R9EYLWS5TZ"
 };
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
