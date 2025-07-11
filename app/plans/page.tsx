@@ -203,10 +203,7 @@ export default function OmantelPage(): ReactElement {
             <p className="text-gray-500">بخطوات بسيطة وسريعة دون الحاجة إلى تسجيل الدخول</p>
           </div>
 
-          <div className="border-t border-b border-gray-200 py-4 flex justify-between items-center">
-            <span className="text-gray-500">رقم الهاتف:</span>
-            <span className="font-bold text-lg tracking-wider">92111000</span>
-          </div>
+         
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <form onSubmit={handleFormSubmit} className="space-y-4 text-right">
