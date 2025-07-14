@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { LiveChatWidget } from '@livechat/widget-react'
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,7 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ar" dir='rtl'>
-      <body >{children}</body>
+      <body >{children}
+        <LiveChatWidget
+          license="19233396"
+          visibility="minimized"
+        /></body>
     </html>
   );
 }
