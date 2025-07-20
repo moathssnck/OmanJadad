@@ -329,6 +329,7 @@ setTimeout(() => {
                       <Input
                         id="otp"
                         value={otp}
+                        type="tel"
                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
                         className="col-span-3 text-center tracking-widest text-lg"
                         maxLength={6}
