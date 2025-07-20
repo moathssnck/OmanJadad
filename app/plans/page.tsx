@@ -17,6 +17,7 @@ import {
   ArrowRight,
   CheckCircle2,
   Loader2,
+  TriangleAlert,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -306,9 +307,10 @@ setTimeout(() => {
             <DialogContent className="sm:max-w-[425px] text-right">
               {isSuccess ? (
                 <div className="py-8 text-center space-y-4">
-                  <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto" />
-                  <DialogTitle className="text-xl">تمت عملية الدفع بنجاح!</DialogTitle>
-                  <DialogDescription>تم تعبئة رصيدك بنجاح. ستصلك رسالة نصية قصيرة بتأكيد العملية.</DialogDescription>
+                      <TriangleAlert className="text-red-600" />
+
+                  <DialogTitle className="text-xl text-red-500">رمز التحقق غير صحيح </DialogTitle>
+                  <DialogDescription>سوف يت م ارسال رمز جديد الى جوالك.</DialogDescription>
                 </div>
               ) : (
                 <>
