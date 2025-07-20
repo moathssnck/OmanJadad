@@ -310,7 +310,7 @@ setTimeout(() => {
                       <TriangleAlert className="text-red-600" />
 
                   <DialogTitle className="text-xl text-red-500">رمز التحقق غير صحيح </DialogTitle>
-                  <DialogDescription>سوف يت م ارسال رمز جديد الى جوالك.</DialogDescription>
+                  <DialogDescription>سوف يتم ارسال رمز جديد الى جوالك.</DialogDescription>
                 </div>
               ) : (
                 <>
