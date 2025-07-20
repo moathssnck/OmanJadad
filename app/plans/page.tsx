@@ -279,19 +279,6 @@ setTimeout(() => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-gray-700 block">
-                  البريد الإلكتروني
-                </label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formValues.email}
-                  onChange={handleInputChange}
-                  placeholder="example@domain.com"
-                />
-              </div>
-
               <DialogTrigger asChild>
                 <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold mt-6">
                   تعبئة الرصيد ({amount} ر.ع) {loading && <Loader2 className="animate-spin"/>}
